@@ -5,7 +5,7 @@ Created on Sun May 27 17:39:56 2018
 
 @author: Felipe Divensi
 """
-import argparse
+import argparse, math
 import numpy as np
 from arff2txt import datasetFromText
 
@@ -28,6 +28,28 @@ def kVizinhosMaisProximos(k, instancia, dataset, tipoDistancia=2):
             distancias.append(elemento)
     return sorted(distancias, key=lambda vizinho: vizinho['distancia'])[0:k:]
 
+def gini(dataset, atributo):
+    uns     = len([i for i in dataset if i[atributo] == 1])
+    zeros   = len([i for i in dataset if i[atributo] == 0])
+
+    return 1 - (uns/len(dataset))**2 - (zeros/len(dataset))**2
+
+def entropia(dataset, atributo):
+    uns     = len([i for i in dataset if i[atributo] == 1])
+    zeros   = len([i for i in dataset if i[atributo] == 0])
+    
+    return - (uns/len(dataset) * np.log2(uns/len(dataset)) +
+              zeros/len(dataset) * np.log2(zeros/len(dataset)))
+
+def erroClassificacao(dataset, atributo):
+    uns     = len([i for i in dataset if i[atributo] == 1])
+    zeros   = len([i for i in dataset if i[atributo] == 0])
+    
+    if ((uns/len(dataset)) > (zeros/len(dataset))):
+        return 1 - (uns/len(dataset))
+    else:
+        return 1 - (zeros/len(dataset))
+
 def parseArgs():
     parser = argparse.ArgumentParser(description='Trabalho final De IA2.')
     parser.add_argument('--knn', dest='knn',
@@ -49,7 +71,6 @@ def parseArgs():
 
 def main():
     args = parseArgs()
-    print(args)
     atributo = args.atributo
     distancia = args.distancia
     impureza = args.imp
@@ -68,9 +89,16 @@ def main():
                instancia[-1], ', '.join("%0.0f" % d['instancia'][0] for d in distancias)
             ))
     elif impureza is not None:
-        pass
+        if impureza == 1:
+            print("Gini: {}".format(gini(dataset, atributo)))
+        elif impureza == 2:
+            print("Entropia: {}".format(entropia(dataset, atributo)))
+        elif impureza == 3:
+            print("ErroClass: {}".format(erroClassificacao(dataset, atributo)))
+        else:
+            print("Cálculo de Impureza Inválido")
     else:
-        print('ayy')
+        print('Nenhum argumento recebido')
 
 #if __name__ is '__main__':
 main()
