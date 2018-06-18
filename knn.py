@@ -43,23 +43,23 @@ def gini(dataset, atributo):
     uns     = len([i for i in dataset if i[atributo] == 1])
     zeros   = len([i for i in dataset if i[atributo] == 0])
 
-    return 1 - (uns/len(dataset))**2 - (zeros/len(dataset))**2
+    return 1 - (uns/len(uns))**2 - (zeros/len(zeros))**2
 
 def entropia(dataset, atributo):
     uns     = len([i for i in dataset if i[atributo] == 1])
     zeros   = len([i for i in dataset if i[atributo] == 0])
     
-    return - (uns/len(dataset) * np.log2(uns/len(dataset)) +
-              zeros/len(dataset) * np.log2(zeros/len(dataset)))
+    return - (uns/len(uns) * np.log2(uns/len(uns)) +
+              zeros/len(zeros) * np.log2(zeros/len(zeros)))
 
 def erroClassificacao(dataset, atributo):
     uns     = len([i for i in dataset if i[atributo] == 1])
     zeros   = len([i for i in dataset if i[atributo] == 0])
     
-    if ((uns/len(dataset)) > (zeros/len(dataset))):
-        return 1 - (uns/len(dataset))
+    if ((uns/len(uns)) > (zeros/len(zeros))):
+        return 1 - (uns/len(uns))
     else:
-        return 1 - (zeros/len(dataset))
+        return 1 - (zeros/len(zeros))
 
 def parseArgs():
     parser = argparse.ArgumentParser(description='Trabalho final De IA2.')
