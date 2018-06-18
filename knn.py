@@ -26,7 +26,18 @@ def kVizinhosMaisProximos(k, instancia, dataset, tipoDistancia=2):
                                                     tipoDistancia)
             elemento['instancia'] = data
             distancias.append(elemento)
-    return sorted(distancias, key=lambda vizinho: vizinho['distancia'])[0:k:]
+    
+    maisProximas = sorted(distancias, key=lambda vizinho: vizinho['distancia'])[0:k:]
+    comparacao = {}
+    
+    for vizinho in maisProximas:
+        if vizinho['instancia'][-1] in comparacao:
+            comparacao[vizinho['instancia'][-1]] += 1
+        else:
+            comparacao[vizinho['instancia'][-1]] = 1
+    
+    classeEscolhida = max(comparacao, key=comparacao.get)
+    return maisProximas, classeEscolhida
 
 def gini(dataset, atributo):
     uns     = len([i for i in dataset if i[atributo] == 1])
@@ -76,18 +87,19 @@ def main():
     impureza = args.imp
     knn = args.knn
     vizinhos = args.vizinhos
-
     arquivo = args.arquivo
     
     atributos, dataset = datasetFromText(arquivo)
 
     if knn:
         for instancia in dataset:
-            distancias = kVizinhosMaisProximos(vizinhos, instancia, dataset, distancia)
-
-            print('classe: {} \nvizinhos mais próximos: {} '.format(
-               instancia[-1], ', '.join("%0.0f" % d['instancia'][0] for d in distancias)
+            distancias, classe = kVizinhosMaisProximos(vizinhos, instancia, dataset, distancia)
+            
+            print('Classe = {} \nvizinhos mais próximos: {} \n'.format(
+                classe,
+                ', '.join("%0.0f" % d['instancia'][0] for d in distancias)
             ))
+            
     elif impureza is not None:
         if impureza == 1:
             print("Gini: {}".format(gini(dataset, atributo)))
