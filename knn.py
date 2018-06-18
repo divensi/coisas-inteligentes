@@ -5,7 +5,7 @@ Created on Sun May 27 17:39:56 2018
 
 @author: Felipe Divensi
 """
-import argparse, math
+import argparse
 import numpy as np
 from arff2txt import datasetFromText
 
@@ -43,23 +43,23 @@ def gini(dataset, atributo):
     uns     = len([i for i in dataset if i[atributo] == 1])
     zeros   = len([i for i in dataset if i[atributo] == 0])
 
-    return 1 - (uns/len(uns))**2 - (zeros/len(zeros))**2
+    return 1 - (uns/len(dataset))**2 - (zeros/len(dataset))**2
 
 def entropia(dataset, atributo):
     uns     = len([i for i in dataset if i[atributo] == 1])
     zeros   = len([i for i in dataset if i[atributo] == 0])
     
-    return - (uns/len(uns) * np.log2(uns/len(uns)) +
-              zeros/len(zeros) * np.log2(zeros/len(zeros)))
+    return - (uns/len(dataset) * np.log2(uns/len(dataset)) +
+              zeros/len(dataset) * np.log2(zeros/len(dataset)))
 
 def erroClassificacao(dataset, atributo):
     uns     = len([i for i in dataset if i[atributo] == 1])
     zeros   = len([i for i in dataset if i[atributo] == 0])
     
-    if ((uns/len(uns)) > (zeros/len(zeros))):
-        return 1 - (uns/len(uns))
+    if ((uns/len(dataset)) > (zeros/len(dataset))):
+        return 1 - (uns/len(dataset))
     else:
-        return 1 - (zeros/len(zeros))
+        return 1 - (zeros/len(dataset))
 
 def parseArgs():
     parser = argparse.ArgumentParser(description='Trabalho final De IA2.')
@@ -74,7 +74,7 @@ def parseArgs():
     parser.add_argument('-a', dest='atributo', default=0, type=int,
                     help='Indica o Atributo Binario a ser usado no ' +
                     'calculo da impureza')
-    parser.add_argument('arquivo', nargs='?')
+    parser.add_argument('arquivo', nargs='?', default='iris.txt')
 
     args = parser.parse_args()
     
@@ -93,7 +93,8 @@ def main():
 
     if knn:
         for instancia in dataset:
-            distancias, classe = kVizinhosMaisProximos(vizinhos, instancia, dataset, distancia)
+            distancias, classe = kVizinhosMaisProximos(
+                    vizinhos, instancia, dataset, distancia)
             
             print('Classe = {} \nvizinhos mais próximos: {} \n'.format(
                 classe,
